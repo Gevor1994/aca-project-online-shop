@@ -3,6 +3,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import firebase from 'firebase'
+
 
 class FormRegistr extends Component {
     constructor(props){
@@ -25,29 +27,37 @@ class FormRegistr extends Component {
     }
 
     handleButtonClick(){
-        let ifValid = false;
+        let isValid = false;
         let isValidConf = true;
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.inputEmail))
             {
-               ifValid = true;
+               isValid = true;
             }
         let pass= this.state.inputPass;
         let conf= this.state.inputConf;
-        for(let i= 0 ; i < pass.length; ++i){
+        if(pass.length === conf.length){
+            for(let i= 0 ; i < pass.length; ++i){
             if(pass[i] !== conf[i]){
+                isValidConf = true;
+                break
+            }else{
                 isValidConf = false;
             }
+          }
         }
+
         this.setState({
-          valid: ifValid,
+          valid: !isValid,
           validConf: isValidConf
         });
-        
+        if(isValid && !isValidConf){
+            firebase.auth().createUserWithEmailAndPassword(this.state.inputEmail, this.state.inputPass)
+        }
     }
 
 
     render() {
-        const isAllDone = (this.state.inputEmail.length > 0 && this.state.inputPass.length > 0 && this.state.inputConf.length > 0);
+        const isAllDone = (this.state.inputEmail.length > 0 && this.state.inputPass.length > 6 && this.state.inputConf.length > 6);
         const {inputEmail, inputPass, inputConf, valid, validConf} = this.state;
         return (
             <div>
@@ -57,7 +67,7 @@ class FormRegistr extends Component {
                     <div className= "div1">
                     <label>Email address * </label> 
                     <TextField
-                        error={!valid}
+                        error={valid}
                         className = "login-input"
                         label="Login"
                         type="text"
@@ -84,7 +94,7 @@ class FormRegistr extends Component {
                     <div className= "div2">
                     <label>Confirm your Password * </label>
                     <TextField
-                        error={!validConf}
+                        error={validConf}
                         className = "login-input"
                         label="Confirm"
                         type="password"

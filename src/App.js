@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormRegistr from './FormRegistr';
-
+import firebase from 'firebase'
 
 export class App extends Component {
   constructor(props){
@@ -26,22 +26,27 @@ export class App extends Component {
     })
   }
 
-
   handleButtonClick(){
-    let ifValid = false;
+    let isValid = false;
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.inputEmail))
         {
-           ifValid = true;
+           isValid = true;
         }
     this.setState({
-      valid: ifValid
+      valid: !isValid
     });
+    if(isValid){
+      firebase.auth().signInWithEmailAndPassword(this.state.inputEmail, this.state.inputPass);
+      
+          }
+    
   }
 
 
   render() {
-    const isAllDone = (this.state.inputEmail.length > 0 && this.state.inputPass.length > 0 );
+    const isAllDone = (this.state.inputEmail.length > 0 && this.state.inputPass.length > 6 );
     const {inputEmail, inputPass, valid} = this.state;
+    
     return (
     <div>
       <FormRegistr />
@@ -52,7 +57,7 @@ export class App extends Component {
         <div className= "div1">
           <label> Email address * </label> 
           <TextField
-            error={!valid}
+            error={valid}
             className = "login-input"
             label="Login"
             type="text"

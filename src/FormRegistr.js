@@ -13,8 +13,8 @@ class FormRegistr extends Component {
             inputEmail: '',
             inputPass: '',
             inputConf: '',
-            valid: true,
-            validConf: true,
+            valid: false,
+            validConf: false,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -27,11 +27,11 @@ class FormRegistr extends Component {
     }
 
     handleButtonClick(){
-        let isValid = false;
+        let isValid = true;
         let isValidConf = true;
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.inputEmail))
             {
-               isValid = true;
+               isValid = false;
             }
         let pass= this.state.inputPass;
         let conf= this.state.inputConf;
@@ -47,11 +47,17 @@ class FormRegistr extends Component {
         }
 
         this.setState({
-          valid: !isValid,
+          valid: isValid,
           validConf: isValidConf
         });
-        if(isValid && !isValidConf){
-            firebase.auth().createUserWithEmailAndPassword(this.state.inputEmail, this.state.inputPass)
+        if(!isValid && !isValidConf){
+            firebase.auth().createUserWithEmailAndPassword(this.state.inputEmail, this.state.inputPass).then(function (){
+                var user = firebase.auth().currentUser;
+                console.log(user.inputEmail)
+            }
+            )
+            
+
         }
     }
 

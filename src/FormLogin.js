@@ -4,7 +4,6 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormRegistr from './FormRegistr';
 import firebase from 'firebase'
 
 export class FormLogin extends Component {
@@ -14,6 +13,7 @@ export class FormLogin extends Component {
       inputEmail: '',
       inputPass: '', 
       valid: false,
+      rememberMy: false,
   }
   this.handleChange = this.handleChange.bind(this);
   this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -24,6 +24,13 @@ export class FormLogin extends Component {
   handleChange (event, type){
     this.setState({
         [type] : event.target.value
+    })
+  }
+
+  handeleRememberMy = () => {
+    let isClickRemember = false;
+    this.setState ({
+      rememberMy : !isClickRemember,
     })
   }
 
@@ -39,13 +46,35 @@ export class FormLogin extends Component {
     });
     if(!isValid){
       
-      firebase.auth().signInWithEmailAndPassword(this.state.inputEmail, this.state.inputPass)
-      .then(function(){ console.log("Welcome to our shop")})
-      .catch(handleButtonClick => console.log("Your Login or Password is wrong, please Enter again"))
+      const WRONG_EMAIL= 'This emial is not registered, sign it up.';
+      const BAD_FORMAT = 'Email adress is badly formatted.';
+      const WRONG_PASSWORD= 'Password is incorrect, try again or reset it.';
       
       
+
+      return new Promise((resolve,reject) => {
+        firebase.auth().signInWithEmailAndPassword(this.state.inputEmail, this.state.inputPass)
+        .then(_ => {
+          if(this.state.rememberMy){
+            resolve( console.log("Welcome"));
+          }else{
+            this.firebase.auth().setPersistence('session').then(_ => resolve(console.log("Something happened with  SESSION")));
+          }
+        })
+        .catch(error => {
+          switch(error.code){
+            case 'auth/invalid-email':
+              reject(BAD_FORMAT);
+              break;
+            case 'auth/user-not-found':
+              reject(WRONG_EMAIL);
+              break;
+            case 'auth/wrong-password':
+              reject(WRONG_PASSWORD)
+          }
+        })
+      })
     }
-    
   }
 
   
@@ -60,9 +89,16 @@ export class FormLogin extends Component {
     firebase.auth().signOut();
   }
 
+  handeleRememberMy = () => {
+    let isClickRemember = false;
+    this.setState ({
+      rememberMy : !isClickRemember,
+    })
+  }
+
   render() {
     const isAllDone = (this.state.inputEmail.length > 0 && this.state.inputPass.length > 6 );
-    const {inputEmail, inputPass, valid} = this.state;
+    const {inputEmail, inputPass, valid, rememberMy} = this.state;
     
     return (
     <div>
@@ -120,6 +156,7 @@ export class FormLogin extends Component {
               <Checkbox
                 value="checkedB"
                 color="primary"
+                onClick= {this.handeleRememberMy}
               />
             }
             label="Remember"

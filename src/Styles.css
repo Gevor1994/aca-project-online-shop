@@ -14,7 +14,7 @@
 }
 
 .div2{
-    display: flex;
+ display: flex;
 flex-direction: column;
 margin-top: 50px;
 margin-bottom: 70px;
@@ -30,6 +30,11 @@ margin-bottom: 70px;
     width: 400px;
     align-items: center;
     margin-bottom: 100px;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .hr { 
@@ -41,3 +46,18 @@ margin-bottom: 70px;
     border-style: inset;
     border-width: 1px;
   }
+
+  .forms-outer {
+      display: flex;
+      justify-content: center;
+      padding-top: 30px;
+  }
+
+  .forms-outer > div:first-child {
+      margin-right: 30px;
+  }
+
+  .forms-outer .MuiButton-contained {
+      margin-bottom: 15px;
+  }
+  
